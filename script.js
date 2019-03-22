@@ -78,8 +78,10 @@ function norm(){
 	var freeWidth = camera[0].clientWidth - plant[0].clientWidth;
 	if(X < -freeWidth){
 		camera[0].style.left = -freeWidth + "px";
+		X = -freeWidth;
 	}
 	if(Y < -freeHeight){
 		camera[0].style.top = -freeHeight + "px";
+		Y = -freeHeight;
 	}
 }
