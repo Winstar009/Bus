@@ -44,7 +44,7 @@ function normP(oldH, oldW, newH, newW){
 	console.log(resH + ':' + resW);
 }
 
-function zoomM(){
+function zoomMM(){
 	if(coef > min)
 		coef -= step;
 	var oldFreeHeight = camera[0].clientHeight - plant[0].clientHeight;
@@ -101,3 +101,66 @@ function mapMouseMove(){
 	oldY = event.clientY;
 }
 // ===================================================================
+
+
+
+// Рисует функция draw
+// Продолжительность анимации duration
+function animate(options) {
+
+  var start = performance.now();
+
+  requestAnimationFrame(function animate(time) {
+    // timeFraction от 0 до 1
+    var timeFraction = (time - start) / options.duration;
+    if (timeFraction > 1) timeFraction = 1;
+
+    // текущее состояние анимации
+    var progress = options.timing(timeFraction)
+
+    options.draw(progress);
+
+    if (timeFraction < 1) {
+      requestAnimationFrame(animate);
+    }
+
+  });
+}
+
+function zoomM(){
+	animate({
+		duration: 1000,
+		timing: function(timeFraction) {
+			return Math.pow(timeFraction, 2);
+		},
+		draw: function(progress) {
+			zoomMM();
+		}
+	});
+}
+
+
+
+test.onclick = function() {
+	animate({
+		duration: 1000,
+		timing: function(timeFraction) {
+			return Math.pow(timeFraction, 2);
+		},
+		draw: function(progress) {
+			test.style.width = progress * 100 + '%';
+		}
+	});
+};
+
+brick.onclick = function() {
+	animate({
+		duration: 1000,
+		timing: function(timeFraction) {
+			return Math.pow(timeFraction, 2);
+		},
+		draw: function(progress) {
+			brick.style.left = progress * 500 + 'px';
+		}
+	});
+};

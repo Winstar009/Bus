@@ -36,3 +36,9 @@
 	height: 35px;
 	margin: 10px;
 }
+
+.test {
+	display: inline-block;
+	background-color: aqua;
+	width: 20%;
+}
