@@ -44,7 +44,7 @@ function normP(oldH, oldW, newH, newW){
 	console.log(resH + ':' + resW);
 }
 
-function zoomMM(){
+function zoomM(){
 	if(coef > min)
 		coef -= step;
 	var oldFreeHeight = camera[0].clientHeight - plant[0].clientHeight;
@@ -127,20 +127,6 @@ function animate(options) {
   });
 }
 
-function zoomM(){
-	animate({
-		duration: 1000,
-		timing: function(timeFraction) {
-			return Math.pow(timeFraction, 2);
-		},
-		draw: function(progress) {
-			zoomMM();
-		}
-	});
-}
-
-
-
 test.onclick = function() {
 	animate({
 		duration: 1000,
@@ -149,18 +135,6 @@ test.onclick = function() {
 		},
 		draw: function(progress) {
 			test.style.width = progress * 100 + '%';
-		}
-	});
-};
-
-brick.onclick = function() {
-	animate({
-		duration: 1000,
-		timing: function(timeFraction) {
-			return Math.pow(timeFraction, 2);
-		},
-		draw: function(progress) {
-			brick.style.left = progress * 500 + 'px';
 		}
 	});
 };
