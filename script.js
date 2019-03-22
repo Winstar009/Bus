@@ -47,8 +47,6 @@ var oldX, oldY, newX, newY;
 var X = 0, Y = 0;
 
 var plant = Array.from(document.getElementsByClassName("plant"));
-console.log(plant);
-
 
 function mapMouseMove(){
 	if(event.buttons == 1){
