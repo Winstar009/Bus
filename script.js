@@ -69,7 +69,7 @@ function zoomM(){
 				var freeWidth = camera[0].clientWidth - plant[0].clientWidth;
 				var resW = (camera[0].clientWidth - cameraWidth) / 2;
 				var resH = (camera[0].clientHeight - cameraHeight) / 2;
-
+				
 				if(X - resW < 0){
 					camera[0].style.left = X - resW + "px";
 					X -= resW;
