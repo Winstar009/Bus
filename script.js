@@ -138,10 +138,10 @@ camera.onmousemove = function() {
 		camera.style.top = Y + "px";
 	}
 	else{
-		corX = (event.view.innerWidth - camera.clientWidth) / 2;
-		corY = (event.view.innerHeight - camera.clientHeight) / 2;
-		target.style.left = event.clientX - corX + "px";
-		target.style.top = event.clientY - corY + "px";
+		corX = (event.view.innerWidth - plant.clientWidth) / 2;
+		corY = (event.view.innerHeight - plant.clientHeight) / 2;
+		target.style.left = event.clientX - corX - X + "px";
+		target.style.top = event.clientY - corY - Y + "px";
 	}
 	oldX = event.clientX;
 	oldY = event.clientY;
