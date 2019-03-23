@@ -9,6 +9,10 @@ var step = 50;
 
 var oldX, oldY, newX, newY;
 var X = 0, Y = 0;
+var targetX = plant.clientWidth / 2 - X, targetY = plant.clientHeight / 2 - Y;
+center.innerText = targetX + ':' + targetY;
+
+console.log(targetX + ':' + targetY);
 
 
 // расстановка точек
@@ -23,8 +27,8 @@ points.forEach(function(element) {
 // масштабирование
 function zoomP(){
 	if(coef < max){
-		var cameraHeight = camera.clientHeight;
 		var cameraWidth = camera.clientWidth;
+		var cameraHeight = camera.clientHeight;
 		animate({
 			duration: 1000,
 			timing: function(timeFraction) {
@@ -42,11 +46,17 @@ function zoomP(){
 
 				camera.style.top = Y - resH  + "px";
 				Y -= resH;
-				cameraHeight = camera.clientHeight;
 				cameraWidth = camera.clientWidth;
+				cameraHeight = camera.clientHeight;
 				if(progress == 1){
 					coef += step;
 				}
+
+				targetX = plant.clientWidth / 2 - X
+				targetY = plant.clientHeight / 2 - Y;
+				center.style.left = targetX + "px";
+				center.style.top = targetY + "px";
+				center.innerText = targetX + ':' + targetY;
 			}
 		});
 	}
@@ -54,8 +64,8 @@ function zoomP(){
 
 function zoomM(){
 	if(coef > min){
-		var cameraHeight = camera.clientHeight;
 		var cameraWidth = camera.clientWidth;
+		var cameraHeight = camera.clientHeight;
 		animate({
 			duration: 1000,
 			timing: function(timeFraction) {
@@ -65,8 +75,8 @@ function zoomM(){
 				camera.style.width = coef - step * progress + "%";
 				camera.style.height = coef - step * progress + "%";
 
-				var freeHeight = camera.clientHeight - plant.clientHeight;
 				var freeWidth = camera.clientWidth - plant.clientWidth;
+				var freeHeight = camera.clientHeight - plant.clientHeight;
 				var resW = (camera.clientWidth - cameraWidth) / 2;
 				var resH = (camera.clientHeight - cameraHeight) / 2;
 
@@ -87,11 +97,17 @@ function zoomM(){
 					camera.style.top = -freeHeight  + "px";
 					Y = -freeHeight;
 				}
-				cameraHeight = camera.clientHeight;
 				cameraWidth = camera.clientWidth;
+				cameraHeight = camera.clientHeight;
 				if(progress == 1){
 					coef -= step;
 				}
+
+				targetX = plant.clientWidth / 2 - X
+				targetY = plant.clientHeight / 2 - Y;
+				center.style.left = targetX + "px";
+				center.style.top = targetY + "px";
+				center.innerText = targetX + ':' + targetY;
 			}
 		});
 	}
@@ -124,9 +140,8 @@ camera.onmousemove = function() {
 		newY = event.clientY;
 		var resX = newX - oldX;
 		var resY = newY - oldY;
-		var freeHeight = camera.clientHeight - plant.clientHeight;
 		var freeWidth = camera.clientWidth - plant.clientWidth;
-
+		var freeHeight = camera.clientHeight - plant.clientHeight;
 		if(X + resX <= 0 && X + resX >= -freeWidth){
 			X += resX;
 		}
@@ -136,12 +151,19 @@ camera.onmousemove = function() {
 
 		camera.style.left = X + "px";
 		camera.style.top = Y + "px";
+
+		targetX = plant.clientWidth / 2 - X
+		targetY = plant.clientHeight / 2 - Y;
+		center.style.left = targetX + "px";
+		center.style.top = targetY + "px";
+		center.innerText = targetX + ':' + targetY;
 	}
 	else{
 		corX = (event.view.innerWidth - plant.clientWidth) / 2;
 		corY = (event.view.innerHeight - plant.clientHeight) / 2;
 		target.style.left = event.clientX - corX - X + "px";
 		target.style.top = event.clientY - corY - Y + "px";
+		console.log((event.clientX - corX - X) + ':' + (event.clientY - corY - Y));
 	}
 	oldX = event.clientX;
 	oldY = event.clientY;
