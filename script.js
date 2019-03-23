@@ -1,6 +1,6 @@
 var points = Array.from(document.getElementsByClassName("point"));
-var camera = Array.from(document.getElementsByClassName("camera"));
-var plant = Array.from(document.getElementsByClassName("plant"));
+// var camera = Array.from(document.getElementsByClassName("camera"));
+// var plant = Array.from(document.getElementsByClassName("plant"));
 
 var min = 100;
 var max = 500;
@@ -23,27 +23,27 @@ points.forEach(function(element) {
 // масштабирование
 function zoomP(){
 	if(coef < max){
-		var cameraHeight = camera[0].clientHeight;
-		var cameraWidth = camera[0].clientWidth;
+		var cameraHeight = camera.clientHeight;
+		var cameraWidth = camera.clientWidth;
 		animate({
 			duration: 1000,
 			timing: function(timeFraction) {
 				return Math.pow(timeFraction, 2);
 			},
 			draw: function(progress) {
-				camera[0].style.width = coef + step * progress + "%";
-				camera[0].style.height = coef + step * progress + "%";
+				camera.style.width = coef + step * progress + "%";
+				camera.style.height = coef + step * progress + "%";
 
-				var resW = (camera[0].clientWidth - cameraWidth) / 2;
-				var resH = (camera[0].clientHeight - cameraHeight) / 2;
+				var resW = (camera.clientWidth - cameraWidth) / 2;
+				var resH = (camera.clientHeight - cameraHeight) / 2;
 
-				camera[0].style.left = X - resW + "px";
+				camera.style.left = X - resW + "px";
 				X -= resW;
 
-				camera[0].style.top = Y - resH  + "px";
+				camera.style.top = Y - resH  + "px";
 				Y -= resH;
-				cameraHeight = camera[0].clientHeight;
-				cameraWidth = camera[0].clientWidth;
+				cameraHeight = camera.clientHeight;
+				cameraWidth = camera.clientWidth;
 				if(progress == 1){
 					coef += step;
 				}
@@ -54,41 +54,41 @@ function zoomP(){
 
 function zoomM(){
 	if(coef > min){
-		var cameraHeight = camera[0].clientHeight;
-		var cameraWidth = camera[0].clientWidth;
+		var cameraHeight = camera.clientHeight;
+		var cameraWidth = camera.clientWidth;
 		animate({
 			duration: 1000,
 			timing: function(timeFraction) {
 				return Math.pow(timeFraction, 2);
 			},
 			draw: function(progress) {
-				camera[0].style.width = coef - step * progress + "%";
-				camera[0].style.height = coef - step * progress + "%";
+				camera.style.width = coef - step * progress + "%";
+				camera.style.height = coef - step * progress + "%";
 
-				var freeHeight = camera[0].clientHeight - plant[0].clientHeight;
-				var freeWidth = camera[0].clientWidth - plant[0].clientWidth;
-				var resW = (camera[0].clientWidth - cameraWidth) / 2;
-				var resH = (camera[0].clientHeight - cameraHeight) / 2;
-				
+				var freeHeight = camera.clientHeight - plant.clientHeight;
+				var freeWidth = camera.clientWidth - plant.clientWidth;
+				var resW = (camera.clientWidth - cameraWidth) / 2;
+				var resH = (camera.clientHeight - cameraHeight) / 2;
+
 				if(X - resW < 0){
-					camera[0].style.left = X - resW + "px";
+					camera.style.left = X - resW + "px";
 					X -= resW;
 				}
 				if(Y - resH < 0){
-					camera[0].style.top = Y - resH  + "px";
+					camera.style.top = Y - resH  + "px";
 					Y -= resH;
 				}
 				// восстановление при уходе за границы слева
 				if(X < -freeWidth){
-					camera[0].style.left = -freeWidth + "px";
+					camera.style.left = -freeWidth + "px";
 					X = -freeWidth;
 				}
 				if(Y < -freeHeight){
-					camera[0].style.top = -freeHeight  + "px";
+					camera.style.top = -freeHeight  + "px";
 					Y = -freeHeight;
 				}
-				cameraHeight = camera[0].clientHeight;
-				cameraWidth = camera[0].clientWidth;
+				cameraHeight = camera.clientHeight;
+				cameraWidth = camera.clientWidth;
 				if(progress == 1){
 					coef -= step;
 				}
@@ -97,16 +97,35 @@ function zoomM(){
 	}
 }
 // ===================================================================
+var inCamera = false;
+var cameraMove = false;
+camera.onmouseenter = function () {
+	inCamera = true;
+}
+
+camera.onmouseleave = function () {
+	inCamera = false;
+	cameraMove = false;
+}
+
+camera.onmousedown = function () {
+	if(inCamera)
+		cameraMove = true;
+}
+
+camera.onmouseup = function () {
+	cameraMove = false;
+}
 
 // перемещение
-function mapMouseMove(){
-	if(event.buttons == 1){
+camera.onmousemove = function() {
+	if(cameraMove){
 		newX = event.clientX;
 		newY = event.clientY;
 		var resX = newX - oldX;
 		var resY = newY - oldY;
-		var freeHeight = camera[0].clientHeight - plant[0].clientHeight;
-		var freeWidth = camera[0].clientWidth - plant[0].clientWidth;
+		var freeHeight = camera.clientHeight - plant.clientHeight;
+		var freeWidth = camera.clientWidth - plant.clientWidth;
 
 		if(X + resX <= 0 && X + resX >= -freeWidth){
 			X += resX;
@@ -115,8 +134,14 @@ function mapMouseMove(){
 			Y += resY;
 		}
 
-		camera[0].style.left = X + "px";
-		camera[0].style.top = Y + "px";
+		camera.style.left = X + "px";
+		camera.style.top = Y + "px";
+	}
+	else{
+		corX = (event.view.innerWidth - camera.clientWidth) / 2;
+		corY = (event.view.innerHeight - camera.clientHeight) / 2;
+		target.style.left = event.clientX - corX + "px";
+		target.style.top = event.clientY - corY + "px";
 	}
 	oldX = event.clientX;
 	oldY = event.clientY;
