@@ -22,58 +22,79 @@ points.forEach(function(element) {
 
 // масштабирование
 function zoomP(){
-	if(coef < max)
-		coef += step;
-	var oldFreeHeight = camera[0].clientHeight - plant[0].clientHeight;
-	var oldFreeWidth = camera[0].clientWidth - plant[0].clientWidth;
-	camera[0].style.width = coef + "%";
-	camera[0].style.height = coef + "%";
-	var newFreeHeight = camera[0].clientHeight - plant[0].clientHeight;
-	var newFreeWidth = camera[0].clientWidth - plant[0].clientWidth;
-	normP(oldFreeHeight, oldFreeWidth, newFreeHeight, newFreeWidth)
-}
+	if(coef < max){
+		var cameraHeight = camera[0].clientHeight;
+		var cameraWidth = camera[0].clientWidth;
+		animate({
+			duration: 1000,
+			timing: function(timeFraction) {
+				return Math.pow(timeFraction, 2);
+			},
+			draw: function(progress) {
+				camera[0].style.width = coef + step * progress + "%";
+				camera[0].style.height = coef + step * progress + "%";
 
-function normP(oldH, oldW, newH, newW){
-	var resW = newW - oldW;
-	var resH = newH - oldH;
-	camera[0].style.left = X - resW / 2 + "px";
-	X -= resW / 2;
+				var resW = (camera[0].clientWidth - cameraWidth) / 2;
+				var resH = (camera[0].clientHeight - cameraHeight) / 2;
 
-	camera[0].style.top = Y - resH / 2 + "px";
-	Y -= resH / 2;
-	console.log(resH + ':' + resW);
+				camera[0].style.left = X - resW + "px";
+				X -= resW;
+
+				camera[0].style.top = Y - resH  + "px";
+				Y -= resH;
+				cameraHeight = camera[0].clientHeight;
+				cameraWidth = camera[0].clientWidth;
+				if(progress == 1){
+					coef += step;
+				}
+			}
+		});
+	}
 }
 
 function zoomM(){
-	if(coef > min)
-		coef -= step;
-	var oldFreeHeight = camera[0].clientHeight - plant[0].clientHeight;
-	var oldFreeWidth = camera[0].clientWidth - plant[0].clientWidth;
-	camera[0].style.width = coef + "%";
-	camera[0].style.height = coef + "%";
-	var newFreeHeight = camera[0].clientHeight - plant[0].clientHeight;
-	var newFreeWidth = camera[0].clientWidth - plant[0].clientWidth;
-	normM(oldFreeHeight, oldFreeWidth, newFreeHeight, newFreeWidth);
-}
+	if(coef > min){
+		var cameraHeight = camera[0].clientHeight;
+		var cameraWidth = camera[0].clientWidth;
+		animate({
+			duration: 1000,
+			timing: function(timeFraction) {
+				return Math.pow(timeFraction, 2);
+			},
+			draw: function(progress) {
+				camera[0].style.width = coef - step * progress + "%";
+				camera[0].style.height = coef - step * progress + "%";
 
-function normM(oldH, oldW, newH, newW){
-	var freeHeight = camera[0].clientHeight - plant[0].clientHeight;
-	var freeWidth = camera[0].clientWidth - plant[0].clientWidth;
-	var resW = newW - oldW;
-	var resH = newH - oldH;
-	camera[0].style.left = X - resW / 2 + "px";
-	X -= resW / 2;
-	camera[0].style.top = Y - resH / 2 + "px";
-	Y -= resH / 2;
-	if(X < -freeWidth){
-		camera[0].style.left = -freeWidth + "px";
-		X = -freeWidth;
+				var freeHeight = camera[0].clientHeight - plant[0].clientHeight;
+				var freeWidth = camera[0].clientWidth - plant[0].clientWidth;
+				var resW = (camera[0].clientWidth - cameraWidth) / 2;
+				var resH = (camera[0].clientHeight - cameraHeight) / 2;
+
+				if(X - resW < 0){
+					camera[0].style.left = X - resW + "px";
+					X -= resW;
+				}
+				if(Y - resH < 0){
+					camera[0].style.top = Y - resH  + "px";
+					Y -= resH;
+				}
+				// восстановление при уходе за границы слева
+				if(X < -freeWidth){
+					camera[0].style.left = -freeWidth + "px";
+					X = -freeWidth;
+				}
+				if(Y < -freeHeight){
+					camera[0].style.top = -freeHeight  + "px";
+					Y = -freeHeight;
+				}
+				cameraHeight = camera[0].clientHeight;
+				cameraWidth = camera[0].clientWidth;
+				if(progress == 1){
+					coef -= step;
+				}
+			}
+		});
 	}
-	if(Y < -freeHeight){
-		camera[0].style.top = -freeHeight + "px";
-		Y = -freeHeight;
-	}
-	console.log(resH + ':' + resW);
 }
 // ===================================================================
 
@@ -101,40 +122,3 @@ function mapMouseMove(){
 	oldY = event.clientY;
 }
 // ===================================================================
-
-
-
-// Рисует функция draw
-// Продолжительность анимации duration
-function animate(options) {
-
-  var start = performance.now();
-
-  requestAnimationFrame(function animate(time) {
-    // timeFraction от 0 до 1
-    var timeFraction = (time - start) / options.duration;
-    if (timeFraction > 1) timeFraction = 1;
-
-    // текущее состояние анимации
-    var progress = options.timing(timeFraction)
-
-    options.draw(progress);
-
-    if (timeFraction < 1) {
-      requestAnimationFrame(animate);
-    }
-
-  });
-}
-
-test.onclick = function() {
-	animate({
-		duration: 1000,
-		timing: function(timeFraction) {
-			return Math.pow(timeFraction, 2);
-		},
-		draw: function(progress) {
-			test.style.width = progress * 100 + '%';
-		}
-	});
-};
