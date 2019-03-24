@@ -52,7 +52,7 @@ function zoomP(){
 					coef += step;
 				}
 
-				targetX = plant.clientWidth / 2 - X
+				targetX = plant.clientWidth / 2 - X;
 				targetY = plant.clientHeight / 2 - Y;
 				center.style.left = targetX + "px";
 				center.style.top = targetY + "px";
@@ -103,7 +103,7 @@ function zoomM(){
 					coef -= step;
 				}
 
-				targetX = plant.clientWidth / 2 - X
+				targetX = plant.clientWidth / 2 - X;
 				targetY = plant.clientHeight / 2 - Y;
 				center.style.left = targetX + "px";
 				center.style.top = targetY + "px";
@@ -152,7 +152,7 @@ camera.onmousemove = function() {
 		camera.style.left = X + "px";
 		camera.style.top = Y + "px";
 
-		targetX = plant.clientWidth / 2 - X
+		targetX = plant.clientWidth / 2 - X;
 		targetY = plant.clientHeight / 2 - Y;
 		center.style.left = targetX + "px";
 		center.style.top = targetY + "px";
