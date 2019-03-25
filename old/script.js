@@ -1,4 +1,13 @@
+var points = Array.from(document.getElementsByClassName("point"));
+
 var oldX, oldY, newX, newY;
+// расстановка точек
+points.forEach(function(element) {
+	var x = element.getAttribute("data-x");
+	var y = element.getAttribute("data-y");
+	element.style.left = x + "%";
+	element.style.top = y + "%";
+});
 // ===================================================================
 
 // масштабирование
@@ -208,23 +217,3 @@ function posTarget() {
 	center.style.transform = "matrix(1, 0, 0, 1," + targetX + "," + targetY + ")";
 	center.innerText = targetX + ':' + targetY;
 }
-
-var dataPoints = [];
-
-for(i = 0; i < 100; i++){
-	t = new Object();
-	t.id = i;
-	t.x = Math.random() * 100;
-	t.y = Math.random() * 100;
-	dataPoints.push(t);
-}
-
-// расстановка точек
-dataPoints.forEach(function(element) {
-	var elem = document.createElement("div");
-	elem.className = "point";
-	elem.innerText = element.id;
-	elem.style.left = element.x + "%";
-	elem.style.top = element.y + "%";
-	camera.appendChild(elem);
-});
