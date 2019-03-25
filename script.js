@@ -60,7 +60,6 @@ canvas.onmouseup = function () {
 // перемещение
 canvas.onmousemove = function() {
 	moveCamera();
-	console.log(X + ':' + Y);
 }
 
 function moveCamera() {
