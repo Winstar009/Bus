@@ -16,8 +16,6 @@ var zMin = 1, zMax = 3.5;
 var zStep = 0.5;
 var zCoef = 1;
 var zCStep = 1;
-
-var coefP = 1.6, coefM = 0.5, corZ = 0.1;
 var scrollUnlock = true;
 
 function zoom(coef, coefTo, posX, posY, posXTo, posYTo) {
@@ -47,22 +45,24 @@ function zoom(coef, coefTo, posX, posY, posXTo, posYTo) {
 
 zoomP.onclick = function() {
 	if(zCoef < zMax) {
-		xyCoef = coefP - zCStep * corZ;
-		zoom(zCoef, zCoef + zStep, X, Y, X * xyCoef, Y * xyCoef);
+		nX = newCoord(X, camera.clientWidth, zCoef, zCoef + zStep);
+		nY = newCoord(Y, camera.clientHeight, zCoef, zCoef + zStep);
+		zoom(zCoef, zCoef + zStep, X, Y, nX, nY);
 		zCoef += zStep;
-		X *= xyCoef;
-		Y *= xyCoef;
+		X = nX;
+		Y = nY;
 		zCStep++;
 	}
 }
 
 zoomM.onclick = function() {
 	if(zCoef > zMin) {
-		xyCoef = coefM + zCStep * corZ;
-		zoom(zCoef, zCoef - zStep, X, Y, X * xyCoef, Y * xyCoef);
+		nX = newCoord(X, camera.clientWidth, zCoef, zCoef - zStep);
+		nY = newCoord(Y, camera.clientHeight, zCoef, zCoef - zStep);
+		zoom(zCoef, zCoef - zStep, X, Y, nX, nY);
 		zCoef -= zStep;
-		X *= xyCoef;
-		Y *= xyCoef;
+		X = nX;
+		Y = nY;
 		zCStep--;
 	}
 }
@@ -73,25 +73,31 @@ plant.onwheel = function() {
 		cY = -cursorY * zCoef;
 		if(event.deltaY < 0){
 			if(zCoef < zMax) {
-				xyCoef = coefP - zCStep * corZ;
-				zoom(zCoef, zCoef + zStep, X, Y, cX * xyCoef, cY * xyCoef);
+				nX = newCoord(cX, camera.clientWidth, zCoef, zCoef + zStep);
+				nY = newCoord(cY, camera.clientHeight, zCoef, zCoef + zStep);
+				zoom(zCoef, zCoef + zStep, X, Y, nX, nY);
 				zCoef += zStep;
-				X = cX * xyCoef;
-				Y = cY * xyCoef;
+				X = nX;
+				Y = nY;
 				zCStep++;
 			}
 		}
 		else{
 			if(zCoef > zMin) {
-				xyCoef = coefM + zCStep * corZ;
-				zoom(zCoef, zCoef - zStep, X, Y, cX * xyCoef, cY * xyCoef);
+				nX = newCoord(cX, camera.clientWidth, zCoef, zCoef - zStep);
+				nY = newCoord(cY, camera.clientHeight, zCoef, zCoef - zStep);
+				zoom(zCoef, zCoef - zStep, X, Y, nX, nY);
 				zCoef -= zStep;
-				X = cX * xyCoef;
-				Y = cY * xyCoef;
+				X = nX;
+				Y = nY;
 				zCStep--;
 			}
 		}
 	}
+}
+
+function newCoord(val, len, coef, newCoef) {
+	return (val / (len * coef / 100)) * (len * newCoef / 100);
 }
 // ===================================================================
 function ret(){
