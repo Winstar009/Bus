@@ -83,6 +83,11 @@ plant.onwheel = function() {
 				Y = nY;
 				zCStep--;
 			}
+			else{
+				zoom(zCoef, zCoef, X, Y, 0, 0);
+				X = 0;
+				Y = 0;
+			}
 		}
 	}
 }
