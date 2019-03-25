@@ -1,12 +1,40 @@
-var dataPoints = [];
-
-for(i = 0; i < 100; i++){
-	t = new Object();
-	t.id = i;
-	t.x = Math.random() * 100;
-	t.y = Math.random() * 100;
-	dataPoints.push(t);
+function getRandomColor() {
+  var letters = '0123456789ABCDEF';
+  var color = '#';
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
 }
+
+kPoitns = 100;
+kRoutes = 10;
+kPointsInRoute = 5;
+
+var dataPoints = [];
+for(i = 0; i < kPoitns; i++){
+	el = new Object();
+	el.id = i;
+	el.x = Math.random() * 100;
+	el.y = Math.random() * 100;
+	dataPoints.push(el);
+}
+
+var dataRoutes = [];
+for(i = 0; i < kRoutes; i++){
+	el = new Object();
+	el.id = i;
+	el.points = [];
+	el.color = getRandomColor();
+	for(j = 0; j < kPointsInRoute; j++){
+		p = Math.round(Math.random() * kPoitns);
+		if(p < 0) p = 0;
+		if(p >= kPoitns) p = kPoitns - 1;
+		el.points.push(p);
+	}
+	dataRoutes.push(el);
+}
+
 
 var canvas = document.getElementById("map-canvas");
 var cWidth = canvas.clientWidth;
@@ -25,6 +53,18 @@ function printCanvas() {
 	var coefY = canvas.clientHeight / 100;
 	var ctx = canvas.getContext("2d");
 	ctx.clearRect(0, 0, cWidth, cHeight);
+
+	dataRoutes.forEach(function(element) {
+		ctx.beginPath();
+		// console.log(dataPoints[element.points[0]].x);
+		ctx.moveTo(dataPoints[element.points[0]].x * coefX + X, dataPoints[element.points[0]].y * coefY + Y);
+		element.points.forEach(function(p) {
+			ctx.lineTo(dataPoints[p].x * coefX + X, dataPoints[p].y * coefY + Y);
+		});
+		ctx.strokeStyle = element.color;
+		ctx.lineWidth = 1;
+		ctx.stroke();
+	});
 
 	dataPoints.forEach(function(element) {
 		ctx.beginPath();
