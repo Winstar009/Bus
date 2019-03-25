@@ -7,6 +7,7 @@ function getRandomColor() {
   return color;
 }
 
+// ======================= генерация точек и путей =======================
 kPoitns = 100;
 kRoutes = 10;
 kPointsInRoute = 5;
@@ -34,7 +35,7 @@ for(i = 0; i < kRoutes; i++){
 	}
 	dataRoutes.push(el);
 }
-
+// ======================= генерация точек и путей =======================
 
 var canvas = document.getElementById("map-canvas");
 var cWidth = canvas.clientWidth;
@@ -54,21 +55,20 @@ function printCanvas() {
 	var ctx = canvas.getContext("2d");
 	ctx.clearRect(0, 0, cWidth, cHeight);
 
-	dataRoutes.forEach(function(element) {
+	dataRoutes.forEach(function(e) {
 		ctx.beginPath();
-		// console.log(dataPoints[element.points[0]].x);
-		ctx.moveTo(dataPoints[element.points[0]].x * coefX + X, dataPoints[element.points[0]].y * coefY + Y);
-		element.points.forEach(function(p) {
+		ctx.moveTo(dataPoints[e.points[0]].x * coefX + X, dataPoints[e.points[0]].y * coefY + Y);
+		e.points.forEach(function(p) {
 			ctx.lineTo(dataPoints[p].x * coefX + X, dataPoints[p].y * coefY + Y);
 		});
-		ctx.strokeStyle = element.color;
+		ctx.strokeStyle = e.color;
 		ctx.lineWidth = 1;
 		ctx.stroke();
 	});
 
-	dataPoints.forEach(function(element) {
+	dataPoints.forEach(function(e) {
 		ctx.beginPath();
-		ctx.arc(element.x * coefX + X, element.y * coefY + Y, 10, 0, Math.PI * 2, true);
+		ctx.arc(e.x * coefX + X, e.y * coefY + Y, 10, 0, Math.PI * 2, true);
 		ctx.lineWidth = 1;
 		ctx.strokeStyle = "blue";
 		ctx.fillStyle = "#d0d0d0";

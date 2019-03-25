@@ -17,7 +17,7 @@ function zoom(coef, coefTo, posX, posY, posXTo, posYTo) {
 	stepX = posXTo - posX;
 	stepY = posYTo - posY;
 	animate({
-		duration: 1000,
+		duration: 400,
 		timing: function(timeFraction) {
 			return Math.pow(timeFraction, 2);
 		},
@@ -111,7 +111,7 @@ function ret(){
 	}
 	if(r){
 		animate({
-			duration: 1000,
+			duration: 400,
 			timing: function(timeFraction) {
 				return Math.pow(timeFraction, 2);
 			},
