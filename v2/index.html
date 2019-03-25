@@ -11,26 +11,30 @@
 </head>
 <body>
 	<section class="top-section">
-		<p>top</p>
+		
 	</section>
 
 	<section class="main-section">
-		<canvas id="map-canvas">
+		<div class="map">
+			<div id="plant">
+				<div id="camera">
+					<div id="target" class="point" style="left: 50%; top: 50%;" data-x="50" data-y = "50">T</div>
+					<div id="center" class="point" style="left: 50%; top: 50%;" data-x="50" data-y = "50"></div>
+				</div>
+			</div>
 			
-		</canvas>
-
-		<div class="controls">
-			<button id="zoomP">+</button>
-			<button id="zoomM" disabled="disabled">-</button>
-			<a href="v1/index.html">Версия v1</a>
-			<a href="v2/index.html">Версия v2</a>
+			<div class="controls">
+				<button id="zoomP">+</button>
+				<button id="zoomM" disabled="disabled">-</button>
+				<a href="../index.html">Новая версия</a>
+			</div>
 		</div>
 	</section>
 
 	
 
 	<footer>
-		<p>bottom</p>
+		
 	</footer>
 	<script type="text/javascript" src="./script.js"></script>
 </body>

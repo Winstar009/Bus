@@ -1,44 +1,35 @@
-.map {
+body {
 	height: 100vh;
-	padding: 5%;
 }
 
-#plant {
-	overflow: hidden;
-	border: 1px solid;
-	border-color: gray;
-	border-radius: 5px;
-	height: 100%;
+.top-section {
+	height: 10%;
+	padding: 1%;
 }
 
-#camera {
-	top: 0px;
-	left: 0px;
+.main-section {
+	height: 80%;
+}
+
+#map-canvas {
 	width: 100%;
-	height: 100%;
-	
-	cursor: move;
-	position: relative;
-	background-color: #e5e5e5;
+	height: 90%;
+	border: 1px solid;
+    border-color: gray;
 }
 
-.point {
-	position: absolute;
-	height: 30px;
-	width: 30px;
-	text-align: center;
-	border: 1px solid;
-	border-radius: 15px;
+footer {
+	padding: 1%;
+	height: 10%;
+}
+
+.controls {
+	height: 10%;
+	margin: 10px;
 }
 
 .controls button {
 	width: 35px;
 	height: 35px;
-	margin: 10px;
-}
-
-.test {
-	display: inline-block;
-	background-color: aqua;
-	width: 20%;
+	margin-right: 10px;
 }

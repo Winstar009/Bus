@@ -1,85 +1,3 @@
-var dataPoints = [];
-
-for(i = 0; i < 100; i++){
-	t = new Object();
-	t.id = i;
-	t.x = Math.random() * 100;
-	t.y = Math.random() * 100;
-	dataPoints.push(t);
-}
-
-var canvas = document.getElementById("map-canvas");
-var cWidth = canvas.clientWidth;
-var cHeight = canvas.clientHeight
-
-canvas.width = cWidth;
-canvas.height = cHeight;
-
-var X = 0, Y = 0;
-var zCoef = 1;
-
-window.onload = printCanvas();
-
-function printCanvas() {
-	var coefX = canvas.clientWidth / 100;
-	var coefY = canvas.clientHeight / 100;
-	var ctx = canvas.getContext("2d");
-	ctx.clearRect(0, 0, cWidth, cHeight);
-
-	dataPoints.forEach(function(element) {
-		ctx.beginPath();
-		ctx.arc(element.x * coefX + X, element.y * coefY + Y, 10, 0, Math.PI * 2, true);
-		ctx.lineWidth = 1;
-		ctx.strokeStyle = "blue";
-		ctx.fillStyle = "#d0d0d0";
-		ctx.stroke();
-		ctx.fill();
-	});
-}
-
-var inCamera = false;
-var cameraMove = false;
-canvas.onmouseenter = function () {
-	inCamera = true;
-}
-
-canvas.onmouseleave = function () {
-	inCamera = false;
-	cameraMove = false;
-}
-
-canvas.onmousedown = function () {
-	if(inCamera)
-		cameraMove = true;
-}
-
-canvas.onmouseup = function () {
-	cameraMove = false;
-}
-
-// перемещение
-canvas.onmousemove = function() {
-	moveCamera();
-	console.log(X + ':' + Y);
-}
-
-function moveCamera() {
-	if(cameraMove){
-		newX = event.clientX;
-		newY = event.clientY;
-		var resX = newX - oldX;
-		var resY = newY - oldY;
-		if(Math.abs(X + resX) < cWidth * zCoef / 2)
-			X += resX;
-		if(Math.abs(Y + resY) < cHeight * zCoef / 2)
-			Y += resY;
-		printCanvas();
-	}
-	oldX = event.clientX;
-	oldY = event.clientY;	
-}
-
-/*
 var oldX, oldY, newX, newY;
 // ===================================================================
 
@@ -290,4 +208,23 @@ function posTarget() {
 	center.style.transform = "matrix(1, 0, 0, 1," + targetX + "," + targetY + ")";
 	center.innerText = targetX + ':' + targetY;
 }
-*/
+
+var dataPoints = [];
+
+for(i = 0; i < 100; i++){
+	t = new Object();
+	t.id = i;
+	t.x = Math.random() * 100;
+	t.y = Math.random() * 100;
+	dataPoints.push(t);
+}
+
+// расстановка точек
+dataPoints.forEach(function(element) {
+	var elem = document.createElement("div");
+	elem.className = "point";
+	elem.innerText = element.id;
+	elem.style.left = element.x + "%";
+	elem.style.top = element.y + "%";
+	camera.appendChild(elem);
+});
