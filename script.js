@@ -38,20 +38,25 @@ for(i = 0; i < kRoutes; i++){
 // ======================= генерация точек и путей =======================
 
 var canvas = document.getElementById("map-canvas");
-var cWidth = canvas.clientWidth;
-var cHeight = canvas.clientHeight
+var cOrigWidth = canvas.clientWidth;
+var cOrigHeight = canvas.clientHeight
 
-canvas.width = cWidth;
-canvas.height = cHeight;
+var cWidth = cOrigWidth;
+var cHeight = cOrigHeight
 
 var X = 0, Y = 0;
 var zCoef = 1;
+var zStep = 0.5;
+var zMin = 1, zMax = 5;
 
 window.onload = printCanvas();
 
 function printCanvas() {
-	var coefX = canvas.clientWidth / 100;
-	var coefY = canvas.clientHeight / 100;
+	canvas.width = cWidth;
+	canvas.height = cHeight;
+
+	var coefX = cWidth / 100;
+	var coefY = cHeight / 100;
 	var ctx = canvas.getContext("2d");
 	ctx.clearRect(0, 0, cWidth, cHeight);
 
@@ -75,8 +80,106 @@ function printCanvas() {
 		ctx.stroke();
 		ctx.fill();
 	});
+
+	// доп точки
+	// ctx.beginPath();
+	// ctx.arc(cursorX, cursorY, 10, 0, Math.PI * 2, true);
+	// ctx.lineWidth = 1;
+	// ctx.strokeStyle = "black";
+	// ctx.fillStyle = "black";
+	// ctx.stroke();
+	// ctx.fill();
+
+	// ctx.beginPath();
+	// ctx.arc(cWidth / 2, cHeight / 2, 10, 0, Math.PI * 2, true);
+	// ctx.lineWidth = 1;
+	// ctx.strokeStyle = "black";
+	// ctx.fillStyle = "black";
+	// ctx.stroke();
+	// ctx.fill();
+	// доп точки
 }
 
+// ======================= масштабирование =======================
+function zoom(coef, coefTo, posX, posY, posXTo, posYTo) {
+	scrollUnlock = false;
+	zoomP.setAttribute("disabled", "disabled");
+	zoomM.setAttribute("disabled", "disabled");
+	step = coefTo - coef;
+	stepX = posXTo - posX;
+	stepY = posYTo - posY;
+	animate({
+		duration: 400,
+		timing: function(timeFraction) {
+			return Math.pow(timeFraction, 2);
+		},
+		draw: function(progress) {
+
+			cWidth = cOrigWidth * (coef + step * progress);
+			cHeight = cOrigHeight * (coef + step * progress);
+			zCoef = coef + step * progress;
+
+			X = posX + stepX * progress;
+			Y = posY + stepY * progress;
+
+			printCanvas();
+			canvas.style.transform = "scale(" + zCoef + "," + zCoef + ")";
+			if(progress == 1){
+				tx = X;
+				ty = Y;
+				ret();
+			}
+		}
+	});
+}
+
+zoomP.onclick = function() {
+	if(zCoef < zMax) {
+		nX = newCoord(X, cWidth, zCoef, zCoef + zStep);
+		nY = newCoord(Y, cHeight, zCoef, zCoef + zStep);
+		zoom(zCoef, zCoef + zStep, X, Y, nX, nY);
+	}
+}
+
+zoomM.onclick = function() {
+	if(zCoef > zMin) {
+		nX = newCoord(X, cWidth, zCoef, zCoef - zStep);
+		nY = newCoord(Y, cHeight, zCoef, zCoef - zStep);
+		zoom(zCoef, zCoef - zStep, X, Y, nX, nY);
+	}
+}
+
+var scrollUnlock = true;
+canvas.onwheel = function() {
+	if(scrollUnlock){
+		cX = tx;
+		cY = ty;
+		if(event.deltaY < 0){
+			if(zCoef < zMax) {
+				nX = newCoord(cX, cWidth, zCoef, zCoef + zStep);
+				nY = newCoord(cY, cHeight, zCoef, zCoef + zStep);
+				zoom(zCoef, zCoef + zStep, X, Y, nX, nY);
+			}
+		}
+		else{
+			if(zCoef > zMin) {
+				nX = newCoord(cX, cWidth, zCoef, zCoef - zStep);
+				nY = newCoord(cY, cHeight, zCoef, zCoef - zStep);
+				zoom(zCoef, zCoef - zStep, X, Y, nX, nY);
+			}
+			else{
+				zoom(zCoef, zCoef, X, Y, 0, 0);
+			}
+		}
+	}
+}
+
+function newCoord(val, len, coef, newCoef) {
+	return (val / (len * coef / 100)) * (len * newCoef / 100);
+}
+// ======================= масштабирование =======================
+
+// ======================= перемещение =======================
 var inCamera = false;
 var cameraMove = false;
 canvas.onmouseenter = function () {
@@ -97,9 +200,17 @@ canvas.onmouseup = function () {
 	cameraMove = false;
 }
 
-// перемещение
+var cursorX, cursorY;
+var tx, ty;
 canvas.onmousemove = function() {
 	moveCamera();
+	corX = event.view.innerWidth - cWidth;
+	corY = event.view.innerHeight - cHeight;
+	cursorX = event.clientX - corX / 2;
+	cursorY = event.clientY - corY / 2;
+	tx = X - (cursorX - cWidth / 2);
+	ty = Y - (cursorY - cHeight / 2);
+	printCanvas();
 }
 
 function moveCamera() {
@@ -108,9 +219,9 @@ function moveCamera() {
 		newY = event.clientY;
 		var resX = newX - oldX;
 		var resY = newY - oldY;
-		if(Math.abs(X + resX) < cWidth * zCoef / 2)
+		if(Math.abs(X + resX) < cWidth / 2)
 			X += resX;
-		if(Math.abs(Y + resY) < cHeight * zCoef / 2)
+		if(Math.abs(Y + resY) < cHeight / 2)
 			Y += resY;
 		printCanvas();
 	}
@@ -118,144 +229,26 @@ function moveCamera() {
 	oldY = event.clientY;	
 }
 
-/*
-var oldX, oldY, newX, newY;
-// ===================================================================
-
-// масштабирование
-var X = 0, Y = 0;
-var zMin = 1, zMax = 3.5;
-var zStep = 0.5;
-var zCoef = 1;
-var zCStep = 1;
-var scrollUnlock = true;
-
-function zoom(coef, coefTo, posX, posY, posXTo, posYTo) {
-	scrollUnlock = false;
-	zoomP.setAttribute("disabled", "disabled");
-	zoomM.setAttribute("disabled", "disabled");
-	step = coefTo - coef;
-	stepX = posXTo - posX;
-	stepY = posYTo - posY;
-	animate({
-		duration: 1000,
-		timing: function(timeFraction) {
-			return Math.pow(timeFraction, 2);
-		},
-		draw: function(progress) {
-			val = coef + step * progress;
-			valX = posX + stepX * progress;
-			valY = posY + stepY * progress;
-			camera.style.transform = "matrix(" + val + ", 0, 0," + val + "," + valX + "," + valY + ")";
-			if(progress == 1){
-				ret();
-			}
-			posTarget();
-		}
-	});
-}
-
-zoomP.onclick = function() {
-	if(zCoef < zMax) {
-		nX = newCoord(X, camera.clientWidth, zCoef, zCoef + zStep);
-		nY = newCoord(Y, camera.clientHeight, zCoef, zCoef + zStep);
-		zoom(zCoef, zCoef + zStep, X, Y, nX, nY);
-		zCoef += zStep;
-		X = nX;
-		Y = nY;
-		zCStep++;
-	}
-}
-
-zoomM.onclick = function() {
-	if(zCoef > zMin) {
-		nX = newCoord(X, camera.clientWidth, zCoef, zCoef - zStep);
-		nY = newCoord(Y, camera.clientHeight, zCoef, zCoef - zStep);
-		zoom(zCoef, zCoef - zStep, X, Y, nX, nY);
-		zCoef -= zStep;
-		X = nX;
-		Y = nY;
-		zCStep--;
-	}
-}
-
-plant.onwheel = function() {
-	if(scrollUnlock){
-		cX = -cursorX * zCoef;
-		cY = -cursorY * zCoef;
-		if(event.deltaY < 0){
-			if(zCoef < zMax) {
-				nX = newCoord(cX, camera.clientWidth, zCoef, zCoef + zStep);
-				nY = newCoord(cY, camera.clientHeight, zCoef, zCoef + zStep);
-				zoom(zCoef, zCoef + zStep, X, Y, nX, nY);
-				zCoef += zStep;
-				X = nX;
-				Y = nY;
-				zCStep++;
-			}
-		}
-		else{
-			if(zCoef > zMin) {
-				nX = newCoord(cX, camera.clientWidth, zCoef, zCoef - zStep);
-				nY = newCoord(cY, camera.clientHeight, zCoef, zCoef - zStep);
-				zoom(zCoef, zCoef - zStep, X, Y, nX, nY);
-				zCoef -= zStep;
-				X = nX;
-				Y = nY;
-				zCStep--;
-			}
-		}
-	}
-}
-
-function newCoord(val, len, coef, newCoef) {
-	return (val / (len * coef / 100)) * (len * newCoef / 100);
-}
-// ===================================================================
 function ret(){
 	r = false;
-	if(Math.abs(X) > camera.clientWidth * zCoef / 2){
-		if(X < 0) retX = camera.clientWidth * zCoef / 2 + X;
-		else retX = camera.clientWidth * zCoef / 2 - X;
+	if(Math.abs(X) > cWidth / 2){
+		if(X < 0) retX = -cWidth / 2;
+		else retX = cWidth / 2;
 		r = true;
 	}
 	else{
-		retX = 0;
+		retX = X;
 	}
-	if(Math.abs(Y) > camera.clientHeight * zCoef / 2){
-		if(Y < 0) retY = camera.clientHeight * zCoef / 2 + Y;
-		else retY = camera.clientHeight * zCoef / 2 - Y;
+	if(Math.abs(Y) > cHeight / 2){
+		if(Y < 0) retY = -cHeight / 2;
+		else retY = cHeight / 2;
 		r = true;
 	}
 	else{
-		retY = 0
+		retY = Y;
 	}
 	if(r){
-		animate({
-			duration: 1000,
-			timing: function(timeFraction) {
-				return Math.pow(timeFraction, 2);
-			},
-			draw: function(progress) {
-				if(X < 0) valX = X - retX * progress;
-				else valX = X + retX * progress;
-				if(Y < 0) valY = Y - retY * progress;
-				else valY = Y + retY * progress;
-				camera.style.transform = "matrix(" + zCoef + ", 0, 0," + zCoef + "," + valX + "," + valY + ")";
-				if(progress == 1){
-					if(X < 0) X -= retX;
-					else X += retX;
-					if(Y < 0) Y -= retY;
-					else Y += retY;
-					scrollUnlock = true;
-					if(zCoef != zMax)
-						zoomP.removeAttribute("disabled");
-					if(zCoef != zMin)
-						zoomM.removeAttribute("disabled");
-				}
-				posTarget();
-			}
-		});
+		zoom(zCoef, zCoef, X, Y, retX, retY);
 	}
 	else{
 		scrollUnlock = true;
@@ -265,68 +258,4 @@ function ret(){
 			zoomM.removeAttribute("disabled");
 	}
 }
-var inCamera = false;
-var cameraMove = false;
-plant.onmouseenter = function () {
-	inCamera = true;
-}
-
-plant.onmouseleave = function () {
-	inCamera = false;
-	cameraMove = false;
-}
-
-plant.onmousedown = function () {
-	if(inCamera)
-		cameraMove = true;
-}
-
-plant.onmouseup = function () {
-	cameraMove = false;
-}
-
-// перемещение
-camera.onmousemove = function() {
-	moveCamera();
-}
-
-function moveCamera() {
-	if(cameraMove){
-		newX = event.clientX;
-		newY = event.clientY;
-		var resX = newX - oldX;
-		var resY = newY - oldY;
-		if(Math.abs(X + resX) < camera.clientWidth * zCoef / 2)
-			X += resX;
-		if(Math.abs(Y + resY) < camera.clientHeight * zCoef / 2)
-			Y += resY;
-		camera.style.transform = "matrix(" + zCoef + ", 0, 0," + zCoef + "," + X + "," + Y + ")";
-		posTarget();
-	}
-	oldX = event.clientX;
-	oldY = event.clientY;	
-}
-
-var cursorX, cursorY
-plant.onmousemove = function() {
-	moveCamera();
-	corX = (event.view.innerWidth - plant.clientWidth) / 2;
-	corY = (event.view.innerHeight - plant.clientHeight) / 2;
-	centerX = event.view.innerWidth / 2;
-	centerY = event.view.innerHeight / 2
-	cursorX = -X / zCoef + (event.clientX - centerX) / zCoef;
-	cursorY = -Y / zCoef + (event.clientY - centerY) / zCoef;
-	target.style.transform = "matrix(1, 0, 0, 1," + cursorX + "," + cursorY + ")";
-	target.innerText = cursorX + ':' + cursorY;
-}
-// ===================================================================
-
-
-center.innerText = '0:0';
-function posTarget() {
-	targetX = -X / zCoef;
-	targetY = -Y / zCoef;
-	center.style.transform = "matrix(1, 0, 0, 1," + targetX + "," + targetY + ")";
-	center.innerText = targetX + ':' + targetY;
-}
-*/
+// ======================= перемещение =======================
